@@ -1,0 +1,6 @@
+Arguments used.
+
+<input folder> <output folder> <sub-job selection>
+
+sub-job selection:
+use "7" to perform all sub jobs - from raw input data to airport distance matrix
