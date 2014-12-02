@@ -86,8 +86,8 @@ public class PreProcessing {
 				numDelay++;
 			}
 			double avgWeatherDelay = totalWeatherDelay / numDelay;
-			String emitKey = "" + key.year + ", " + key.month + ", " + key.day
-					+ ", " + hour + ", " + key.airport + ", " + avgWeatherDelay;
+			String emitKey = "" + key.year + "," + key.month + "," + key.day
+					+ "," + hour + "," + key.airport + "," + avgWeatherDelay;
 			context.write(new Text(emitKey), NullWritable.get());
 		}
 	}
@@ -142,7 +142,7 @@ public class PreProcessing {
 		job.setGroupingComparatorClass(GroupComparator.class);
 		job.setReducerClass(ProcessingReducer.class);
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(DoubleWritable.class);
+		job.setOutputValueClass(NullWritable.class);
 
 		job.setNumReduceTasks(10);
 
@@ -153,10 +153,6 @@ public class PreProcessing {
 			System.exit(1);
 	}
 
-	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();
-		String[] otherArgs = new GenericOptionsParser(conf, args)
-				.getRemainingArgs();
-		RunPreProcessingJob(conf, otherArgs[0], otherArgs[1]);
-	}
+
+
 }
