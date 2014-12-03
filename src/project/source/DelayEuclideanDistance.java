@@ -1,9 +1,15 @@
 package project.source;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -39,27 +45,64 @@ public class DelayEuclideanDistance {
 
 	public static class DistanceReducer extends
 			Reducer<Text, Text, Text, NullWritable> {
+
+		private ArrayList<String> airportList;
+
+		@Override
+		protected void cleanup(Context context) throws IOException,
+				InterruptedException {
+			if (airportList != null)
+				airportList.clear();
+			airportList = null;
+		}
+
+		@Override
+		protected void setup(Context context) throws IOException,
+				InterruptedException {
+			Path[] uris = DistributedCache.getLocalCacheFiles(context
+					.getConfiguration());
+			airportList = new ArrayList<String>();
+
+			BufferedReader readBuffer1 = new BufferedReader(new FileReader(
+					uris[0].toString()));
+			String line;
+			while ((line = readBuffer1.readLine()) != null) {
+				airportList.add(line.replace("\n", "").replace("\r", ""));
+			}
+			readBuffer1.close();
+
+		}
+
 		CSVParser parser = new CSVParser();
 
 		public void reduce(Text key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
-			ArrayList<String> airportDelays = new ArrayList<String>();
-			for (Text avgDelay : values)
-				airportDelays.add(avgDelay.toString());
+			// ArrayList<String> airportDelays = new ArrayList<String>();
+			HashMap<String, Double> airportDelays = new HashMap<String, Double>();
 
-			for (int i = 0; i < airportDelays.size(); i++) {
-				String[] info1 = parser.parseLine(airportDelays.get(i));
-				String airport1 = info1[0];
-				double delay1 = Double.parseDouble(info1[1]);
-				for (int j = i + 1; j < airportDelays.size(); j++) {
-					String[] info2 = parser.parseLine(airportDelays.get(j));
-					String airport2 = info2[0];
-					double delay2 = Double.parseDouble(info2[1]);
+			for (Text avgDelay : values) {
+				String[] info = parser.parseLine(avgDelay.toString());
+				String airport = info[0];
+				double delay = Double.parseDouble(info[1]);
+				airportDelays.put(airport, new Double(delay));
+			}
 
+			for (int i = 0; i < airportList.size(); i++) {
+				for (int j = i + 1; j < airportList.size(); j++) {
+					if (i == j)
+						continue;
+					String airport1 = airportList.get(i);
+					String airport2 = airportList.get(j);
+					double delay1 = airportDelays.containsKey(airport1) ? airportDelays
+							.get(airport1) : 0;
+					double delay2 = airportDelays.containsKey(airport2) ? airportDelays
+							.get(airport2) : 0;
+					if (delay1 == 0 && delay2 == 0)
+						continue;
 					int cmp = airport1.compareToIgnoreCase(airport2);
 					double distance = Math.pow(delay1 - delay2, 2);
 					String distancePair = "";
-					if (cmp == 0)
+					if (cmp == 0) // won't happen, keep the compiler happy
 						continue;
 					if (cmp > 0)
 						distancePair = airport2 + "," + airport1 + ","
@@ -74,10 +117,11 @@ public class DelayEuclideanDistance {
 			}
 		}
 	}
-	
-	public static void RunEuclideanDistanceJob(Configuration conf, String input,
-			String output) throws IOException, InterruptedException,
-			ClassNotFoundException {
+
+	public static void RunEuclideanDistanceJob(Configuration conf,
+			String input, String output, String airportFile)
+			throws IOException, InterruptedException, ClassNotFoundException,
+			URISyntaxException {
 
 		Job job = new Job(conf, "CourseProject-DelayEuclideanDistance");
 		job.setJarByClass(DelayEuclideanDistance.class);
@@ -91,6 +135,9 @@ public class DelayEuclideanDistance {
 		job.setOutputValueClass(NullWritable.class);
 
 		job.setNumReduceTasks(10);
+
+		Configuration conf2 = job.getConfiguration();
+		DistributedCache.addCacheFile(new URI(airportFile), conf2);
 
 		FileInputFormat.addInputPath(job, new Path(input));
 		FileOutputFormat.setOutputPath(job, new Path(output));

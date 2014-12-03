@@ -52,7 +52,7 @@ public class PreProcessing {
 				return;
 			}
 			emitKeyDep.airport = flightData[INDEX_ORIGIN];
-			double weatherDelay;
+			double weatherDelay = 0;
 			try {
 				weatherDelay = Double
 						.parseDouble(flightData[INDEX_WEATHER_DELAY]);

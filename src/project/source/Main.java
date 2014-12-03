@@ -13,16 +13,17 @@ public class Main {
 		String[] otherArgs = new GenericOptionsParser(conf, args)
 				.getRemainingArgs();
 		int selection = Integer.parseInt(otherArgs[2]);
-		/*
-		 * Binary 000 represent 3 jobs now 001 is the preprocessing 010 is the
-		 * euclidean distance 100 is the distance matrix
-		 */
-		if ((selection & 1) == 1)
+
+		if (selection == 0)
+			AirportList.RunAirportListJob(conf, otherArgs[0], otherArgs[1]);
+		if (selection == 1)
 			PreProcessing.RunPreProcessingJob(conf, otherArgs[0], otherArgs[1]);
-		if ((selection & 2) == 2)
+		// When calculating euclidean distance, we have a global knowleadge file
+		// containing every aiport to pass in
+		if (selection == 2)
 			DelayEuclideanDistance.RunEuclideanDistanceJob(conf, otherArgs[0],
-					otherArgs[1]);
-		if ((selection & 4) == 4)
+					otherArgs[1], otherArgs[3]);
+		if (selection == 4)
 			DistanceMatrix.RunMatrixDistanceJob(conf, otherArgs[0],
 					otherArgs[1]);
 	}
