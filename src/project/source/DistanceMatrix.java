@@ -38,7 +38,7 @@ public class DistanceMatrix {
 			Reducer<Text, DoubleWritable, Text, NullWritable> {
 		public void reduce(Text key, Iterable<DoubleWritable> values,
 				Context context) throws IOException, InterruptedException {
-			long airportDistance = 0;
+			double airportDistance = 0;
 			for (DoubleWritable dis : values) {
 				airportDistance += dis.get();
 			}

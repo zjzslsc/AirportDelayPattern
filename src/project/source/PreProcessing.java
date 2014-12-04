@@ -46,8 +46,7 @@ public class PreProcessing {
 				emitKeyDep.year = Integer.parseInt(flightData[INDEX_YEAR]);
 				emitKeyDep.month = Integer.parseInt(flightData[INDEX_MONTH]);
 				emitKeyDep.day = Integer.parseInt(flightData[INDEX_DAY]);
-				emitKeyDep.time = Integer
-						.parseInt(flightData[INDEX_CRS_DEP_TIME]);
+				emitKeyDep.time = 0;
 			} catch (NumberFormatException e) {
 				return;
 			}
@@ -65,7 +64,7 @@ public class PreProcessing {
 			emitKeyArr.year = Integer.parseInt(flightData[INDEX_YEAR]);
 			emitKeyArr.month = Integer.parseInt(flightData[INDEX_MONTH]);
 			emitKeyArr.day = Integer.parseInt(flightData[INDEX_DAY]);
-			emitKeyArr.time = Integer.parseInt(flightData[INDEX_CRS_ARR_TIME]);
+			emitKeyArr.time = 0;
 			emitKeyArr.airport = flightData[INDEX_DEST];
 			context.write(emitKeyArr, new DoubleWritable(weatherDelay));
 		}
@@ -80,12 +79,12 @@ public class PreProcessing {
 				throws IOException, InterruptedException {
 			int hour = key.time / 100;
 			double totalWeatherDelay = 0;
-			double numDelay = 0;
+			double numFlights = 0;
 			for (DoubleWritable delay : values) {
 				totalWeatherDelay += delay.get();
-				numDelay++;
+				numFlights++;
 			}
-			double avgWeatherDelay = totalWeatherDelay / numDelay;
+			double avgWeatherDelay = totalWeatherDelay / numFlights;
 			String emitKey = "" + key.year + "," + key.month + "," + key.day
 					+ "," + hour + "," + key.airport + "," + avgWeatherDelay;
 			context.write(new Text(emitKey), NullWritable.get());
