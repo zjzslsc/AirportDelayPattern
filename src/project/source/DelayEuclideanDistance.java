@@ -100,7 +100,8 @@ public class DelayEuclideanDistance {
 					if (delay1 == 0 && delay2 == 0)
 						continue;
 					int cmp = airport1.compareToIgnoreCase(airport2);
-					double distance = Math.pow(delay1 - delay2, 2);
+					//double distance = Math.pow(delay1 - delay2, 2);
+					double distance = Math.abs(delay1 - delay2);
 					String distancePair = "";
 					if (cmp == 0) // won't happen, keep the compiler happy
 						continue;
