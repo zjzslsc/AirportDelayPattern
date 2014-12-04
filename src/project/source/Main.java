@@ -23,7 +23,7 @@ public class Main {
 		if (selection == 2)
 			DelayEuclideanDistance.RunEuclideanDistanceJob(conf, otherArgs[0],
 					otherArgs[1], otherArgs[3]);
-		if (selection == 4)
+		if (selection == 3)
 			DistanceMatrix.RunMatrixDistanceJob(conf, otherArgs[0],
 					otherArgs[1]);
 	}
