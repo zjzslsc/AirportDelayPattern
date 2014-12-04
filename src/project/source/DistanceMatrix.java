@@ -42,9 +42,10 @@ public class DistanceMatrix {
 			for (DoubleWritable dis : values) {
 				airportDistance += dis.get();
 			}
+			double sqrtDis = Math.sqrt(airportDistance);
 			context.write(
 					new Text(key.toString() + ","
-							+ String.valueOf(airportDistance)),
+							+ String.valueOf(sqrtDis)),
 					NullWritable.get());
 		}
 	}
