@@ -48,7 +48,7 @@ public class PreProcessing {
 				emitKeyDep.day = Integer.parseInt(flightData[INDEX_DAY]);
 				emitKeyDep.time = Integer
 						.parseInt(flightData[INDEX_CRS_DEP_TIME]);
-			} catch (NumberFormatException e) {
+			} catch (Exception e) {
 				return;
 			}
 			emitKeyDep.airport = flightData[INDEX_ORIGIN];
@@ -62,11 +62,16 @@ public class PreProcessing {
 			context.write(emitKeyDep, new DoubleWritable(weatherDelay));
 
 			ProcessingIntermediumKey emitKeyArr = new ProcessingIntermediumKey();
-			emitKeyArr.year = Integer.parseInt(flightData[INDEX_YEAR]);
-			emitKeyArr.month = Integer.parseInt(flightData[INDEX_MONTH]);
-			emitKeyArr.day = Integer.parseInt(flightData[INDEX_DAY]);
-			emitKeyArr.time = Integer.parseInt(flightData[INDEX_CRS_ARR_TIME]);
-			emitKeyArr.airport = flightData[INDEX_DEST];
+			try {
+				emitKeyArr.year = Integer.parseInt(flightData[INDEX_YEAR]);
+				emitKeyArr.month = Integer.parseInt(flightData[INDEX_MONTH]);
+				emitKeyArr.day = Integer.parseInt(flightData[INDEX_DAY]);
+				emitKeyArr.time = Integer
+						.parseInt(flightData[INDEX_CRS_ARR_TIME]);
+				emitKeyArr.airport = flightData[INDEX_DEST];
+			} catch (Exception e) {
+				return;
+			}
 			context.write(emitKeyArr, new DoubleWritable(weatherDelay));
 		}
 	}
@@ -152,7 +157,5 @@ public class PreProcessing {
 		} else
 			System.exit(1);
 	}
-
-
 
 }
