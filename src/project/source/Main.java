@@ -29,5 +29,7 @@ public class Main {
 		if (selection == 4)
 			KNN.RunKNNJob(conf, otherArgs[0], otherArgs[1], otherArgs[3],
 					otherArgs[4]);
+		if (selection == 5)
+			KMedoids.run(conf, otherArgs[0], otherArgs[1], otherArgs[3]);
 	}
 }
