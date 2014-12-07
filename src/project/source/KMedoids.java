@@ -212,7 +212,6 @@ public class KMedoids {
 			centerFile = reduceOutput;
 			reduceOutput = reduceOutput.substring(0, reduceOutput.length()-1) + i;
 			i++;
-			break;
 		}
 	}
 }
