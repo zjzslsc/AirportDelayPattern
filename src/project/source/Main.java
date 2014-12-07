@@ -26,5 +26,8 @@ public class Main {
 		if (selection == 3)
 			DistanceMatrix.RunMatrixDistanceJob(conf, otherArgs[0],
 					otherArgs[1]);
+		if (selection == 4)
+			KNN.RunKNNJob(conf, otherArgs[0], otherArgs[1], otherArgs[3],
+					otherArgs[4]);
 	}
 }
